@@ -1,0 +1,47 @@
+
+ALTER PROC SP_SET_ADD_INFORMATION_CALQULATER 
+    @CalculatorId int=0,
+	@ConfigurationTimeId int=0,
+	@TimestoLend varchar(50)='',
+	@TimeMax int=0,
+	@TimeMin int=0,
+	@AdministrativeExpense decimal(9, 2)=0,
+	@LifeInsuranceTax decimal(9, 2)=0,
+	@Discount decimal(9, 2)=0,
+	@Surcharge decimal(9, 2)=0,
+	@BaseRate decimal(9, 2)=0
+
+	AS
+	BEGIN 
+	IF @TimeMin<1 
+	BEGIN 
+	    SELECT 'EL CLIENTE NO CUMPLE CON ESTO REQUISITOS'
+	END ELSE IF @TimeMin>=1 BEGIN 
+	    SELECT 'EL CLIENTE SI CUMPLE CON ESTO REQUISITOS'
+	END 
+END
+
+
+USE [LoanCalculator]
+GO
+
+DECLARE	@return_value int
+
+EXEC	@return_value = [dbo].[SP_SET_ADD_INFORMATION_CALQULATER]
+		@CalculatorId = 0,
+		@ConfigurationTimeId = 0,
+		@TimestoLend = N'0',
+		@TimeMax = 3,
+		@TimeMin = 1,
+		@AdministrativeExpense = 0,
+		@LifeInsuranceTax = 0,
+		@Discount = 0,
+		@Surcharge = 0,
+		@BaseRate = 0
+
+SELECT	'Return Value' = @return_value
+
+GO
+
+
+ 
