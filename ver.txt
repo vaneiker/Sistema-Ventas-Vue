@@ -1,0 +1,83 @@
+USE [LoanCalculator]
+GO
+
+/****** Object:  Table [dbo].[ConfigurationMonthsTime]    Script Date: 10/17/2019 5:29:31 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ConfigurationMonthsTime](
+	[MonthsTimeId] [int] IDENTITY(1,1) NOT NULL,
+	[ConfigurationMonths] [int] NULL,
+	[MonthsTime] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MonthsTimeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+USE [LoanCalculator]
+GO
+
+/****** Object:  Table [dbo].[ConfigurationTableCalculator]    Script Date: 10/17/2019 5:30:00 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ConfigurationTableCalculator](
+	[CalculatorId] [int] IDENTITY(1,1) NOT NULL,
+	[ConfigurationTimeId] [int] NULL,
+	[TimestoLend] [varchar](50) NULL,
+	[TimeMax] [int] NULL,
+	[TimeMin] [int] NULL,
+	[AdministrativeExpense] [decimal](9, 2) NULL,
+	[LifeInsuranceTax] [decimal](9, 2) NULL,
+	[Discount] [decimal](9, 2) NULL,
+	[Surcharge] [decimal](9, 2) NULL,
+	[BaseRate] [decimal](9, 2) NULL,
+	[TotalRate] [decimal](9, 2) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[CalculatorId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+USE [LoanCalculator]
+GO
+
+/****** Object:  Table [dbo].[ConfigurationTime]    Script Date: 10/17/2019 5:30:21 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ConfigurationTime](
+	[ConfigurationTimeId] [int] IDENTITY(1,1) NOT NULL,
+	[ConfigurationName] [varchar](100) NULL,
+	[ConfigurationStatus] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ConfigurationTimeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+
+
+
+
+
