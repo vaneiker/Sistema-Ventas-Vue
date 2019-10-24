@@ -1,0 +1,44 @@
+USE [LoanCalculator]
+GO
+
+/****** Object:  UserDefinedFunction [dbo].[PMT]    Script Date: 10/21/2019 5:40:10 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER function [dbo].[PMT]
+(
+@rate float,
+@periods smallint,
+@principal numeric(18,7)
+)
+returns numeric (18,7)
+as
+begin
+declare @pmt numeric (18,7)
+
+declare @WK_periods numeric (18,7),
+@WK_principal numeric (18,7),
+@wk_One numeric (18,7),
+@WK_power numeric (18,7)
+
+select  @WK_periods = @periods,
+@WK_principal = @principal,
+@WK_One = 1
+
+select  @pmt =
+
+( @WK_principal * (@rate*power(@WK_One+@rate,@WK_periods)))
+/ (power(@WK_One+@rate,@WK_periods)-@WK_One)
+
+
+return @pmt
+
+end
+
+GO
+

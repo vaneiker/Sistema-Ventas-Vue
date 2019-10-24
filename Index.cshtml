@@ -1,0 +1,254 @@
+﻿@using System.Configuration;
+@{
+
+    var Url = System.Configuration.ConfigurationManager.AppSettings["UrlWeb"];
+}
+
+<link href="~/Componentes/assets/css/Estilos.css" rel="stylesheet" />
+<div id="App">
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 offset-2">
+                    <div class="card">
+                        <div class="card-header card-header-primary">
+                            <h4 class="card-title">Calculadora de Prestamos</h4>
+                            <p class="card-category">Complete la información</p>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Nombre Empleado</label>
+                                            <input type="text" id="txtNombre" v-model="NombreCompleto" class="form-control" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Cédula </label>
+                                            <input type="text" id="Cedula" name="Cedula" v-model="Cedula" autocomplete="off" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Años en la empresa</label>
+                                            <select ref="seleccionadoTiempo" class="custom-select" v-on:change="changeItem($event)">
+                                                <option v-for="element in entidad" v-bind:value="element.Key">{{element.Values}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Tiempo de prestamo (Meses)</label>
+                                            <select ref="seleccionado" class="custom-select" data-toggle="tooltip" data-placement="bottom" title="Seleccione a que tiempo desea el prestamo.">
+                                                <option v-for="element1 in entidad1" v-bind:value="element1.Key">{{element1.ValuesNum}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Salario mensual</label>
+                                            <input autocomplete="off" type="text" class="form-control currency" id="SueldoN" name="SueldoN" v-model="SueldoN" data-toggle="tooltip" data-placement="bottom" title="El salario suministrado tiene que ser despues de los deducibles">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Monto cuota otros prestamos </label>
+                                            <input autocomplete="off" type="text" class="form-control" v-model="CuotaPrestamoFuera" data-toggle="tooltip" data-placement="bottom" title="Monto de las cuotas de otros prestamos. Gastos que estaran activos al tomar este prestamo.">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Monto solicitado </label>
+                                            <input autocomplete="off" type="text" class="form-control" v-model="MontoSolicitado">
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="col-md-12">
+                                        <div class="form-group b-input">
+                                            <label class="bootstrap">Cuotas Mensuales</label>
+                                            <input autocomplete="off" type="text" class="form-control" v-model="CuotasMensual" readonly data-toggle="tooltip" data-placement="bottom" title="Es el pago en que se divide una cuota (Credito o Prestamo)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group b-input">
+                                        <button type="button" id="btnCalculator" v-on:click="SaveCalculator()" class="btn btn-success pull-right">
+                                            <i class="fa fa-calculator fa-tool-button"></i>&nbsp;Calcular
+                                        </button>
+                                        <button type="button" id="btnLimpiar" name="btnLimpiar" v-on:click="clearCampos()" class="btn btn-default pull-right">
+                                            <span><i class="fa fa-file-o fa-tool-button"></i>&nbsp; Nuevo Prestamos </span>
+                                        </button>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <template>
+                                    <div :class="clasesAlert" v-show="esActivado==true">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <i class="material-icons">close</i>
+                                        </button>
+                                        <span>
+                                            {{this.entidad2.Mensaje}}
+                                        </span>
+                                    </div>
+                                </template>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    
+    var app = new Vue({
+        el: '#App',
+        data:
+        {
+            entidad: [],
+            entidad1: [],
+            entidad2: [],
+            valida: false,
+            ParametroObjeto: [],
+            RangoTiempo: '',
+            SueldoN: 0,
+            CuotaPrestamoFuera: 0,
+            TiempoPrestamo: 0,
+            MontoSolicitado: 0,
+            CuotasMensual: 0,
+            seleccionado: '',
+            seleccionadoTiempo: '',
+            Mensaje: '',
+            NivelMensaje: '',
+            isActiveWarnin: false,
+            isActiveSeccu: false,
+            isActiveError: false,
+            NombreCompleto: '',
+            Cedula: '',
+            esActivado: false,
+            clasesAlert: 'alert alert-success'
+      
+
+
+        },
+        created: function () {
+            this.getMostrarCalculo();
+        },
+        created: function () {
+            this.getTiempo();
+        },
+        created: function () {
+            this.getEntidad();
+        },
+        methods:
+        {
+            getEntidad: function () {
+                this.entidad = [];
+                this.$http.get("/api/Calculater/GetTiempo").then(function (response) {
+                    this.entidad = response.body;
+                });
+            },
+            getTiempo: function (parametro) {
+                this.entidad1 = [];
+                this.$http.get("/api/Calculater/GetMeses/" + parametro).then(function (response) {
+                    this.entidad1 = response.body;
+                });
+            },
+
+            getMostrarCalculo: function (rangotiempo, sueldoneto, montocuota, tiempo, montop) {
+
+                this.entidad2 = [];
+                this.$http.post("/api/Calculater/LoanCalculatorSet/", {
+                    RangoTiempo: rangotiempo,
+                    SueldoN: sueldoneto,
+                    CuotaPrestamoFuera: montocuota,
+                    TiempoPrestamo: tiempo,
+                    MontoSolicitado: montop
+                }
+                ).then(function (response) {
+                    this.entidad2 = response.body;
+                    this.CuotasMensual = this.entidad2.ValorCuotaMensual;
+                    this.MontoPrestar = this.entidad2.MontoPrestar;
+                    this.Mensaje = this.entidad2.Mensaje
+                    this.NivelMensaje = this.entidad2.NivelMensaje;
+                    this.esActivado = true;
+                    this.clasesAlert = this.entidad2.NivelMensaje;
+
+                });
+            },
+
+            changeItem: function changeItem(event) {
+                var parametro = event.target.options[event.target.options.selectedIndex].text
+
+                if (parametro === "Seleccionar") {
+                    this.clearCampos();
+                } else {
+                 this.getTiempo(parametro);
+                 this.RangoTiempo = parametro;
+                }
+
+            },
+            SaveCalculator() {
+                var tiempo = this.seleccionado = this.$refs.seleccionado.value;
+                var Selecttiempo = this.seleccionadoTiempo = this.$refs.seleccionadoTiempo.value;
+
+                if (tiempo === "") {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Requerido',
+                        text: 'Seleccione el periodo de tiempo, para que pueda calcular mostrar los meses del prestamo'
+                    })
+                    this.clearCampos()
+                } else
+                    if (this.SueldoN <= 0) {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Requerido',
+                            text: 'El Sueldo neto es Requerido'
+                        })
+                    } else if (this.MontoSolicitado <= 0) {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Requerido',
+                            text: 'El Monto solicitado es Requerido'
+                        })
+                    }
+                    else {
+
+                        this.getMostrarCalculo(this.RangoTiempo, this.SueldoN, this.CuotaPrestamoFuera, tiempo, this.MontoSolicitado);
+                    }
+            },
+
+            clearCampos() {
+
+                this.RangoTiempo = '';
+                this.SueldoN = 0;
+                this.CuotaPrestamoFuera = 0;
+                this.TiempoPrestamo = 0;
+                this.MontoSolicitado = 0;
+                this.CuotasMensual = 0;
+                this.seleccionado = 0;
+                this.seleccionadoTiempo = 0;
+                this.Mensaje = '';
+                this.NivelMensaje = '';
+                this.esActivado = false;
+                this.NombreCompleto = '';
+                this.Cedula = '',
+                    this.getEntidad();
+                this.getTiempo('Menos de 1 Año');
+            }
+        }
+    });
+</script>
+
