@@ -1,0 +1,256 @@
+
+@{
+    ViewBag.Title = "Queue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/vue.js"></script>
+<script src="~/Scripts/vue-resource.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<div class="accordion" id="accordionExample">
+    <input type="hidden" id="IdCurrencyEntry" name="IdCurrencyEntry" v-model="IdCurrencyEntry" />
+    <div class="card">
+        <div class="card-header" id="headingOne">
+            <h2 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <i class="fas fa-database"></i>
+                    Home Page
+                </button>
+            </h2>
+        </div>
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Date Currency Entry</label>
+                            <div>
+                                <input id="txtCurrentDate" name="txtFfrom" type="text" autocomplete="off" class="form-control form-control-sm mydatepickerAllDate" v-model="CurrentDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Hedge Value</label>
+                            <div>
+                                <input id="txtHDG" type="text" class="form-control form-control-sm" v-model="HedgeValue" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Beginning Rate</label>
+                            <div>
+                                <input id="txtBRate" type="text" class="form-control form-control-sm" v-model="BeginningRate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>End Rate</label>
+                            <div>
+                                <input id="txtEndRate" type="text" class="form-control form-control-sm" v-model="EndRate" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <div>
+                                <div class="form-group">
+                                    <label for="exampleFormControlFile1">Upload file</label>
+                                    <input type="file" id="file" ref="file" class="fbtn btn-primary-st btn-sm" v-on:change="handleFileUpload()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <div>
+                                <button id="btnSendInvoicing" class="btn btn-success btn-sm" v-on:click="setSaveInformation()">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    Save Register
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="table-responsive">
+                        <table id="tblQueue" class="table table-striped2" style="border-collapse: collapse !important;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Date Currency Entry</th>
+                                    <th>Parametro #1</th>
+                                    <th>Parametro #2</th>
+                                    <th>Parametro #3</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="element in listado">
+                                    <td width="10%" class="text-center">
+                                        <button type="button" rel="tooltip" class="fbtn btn-primary-st btn-sm">
+                                            <i class="fa fa-edit">edit</i>
+                                        </button>
+                                    </td>
+                                    <td width="10%" class="text-center">{{element.DateCurrencyEntry}}</td>
+                                    <td width="10%" class="text-center">{{element.Hedge_Value}}</td>
+                                    <td width="30%" class="text-center">{{element.Beginning_Rate}}</td>
+                                    <td width="30%" class="text-center">{{element.End_Rate}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ControllerJs/tableCargas.js"></script>
+<script>
+
+    var app = new Vue({
+        el: '#accordionExample',
+        data: {
+            Generic: [],
+            listado: [],
+            CurrentDate: new Date().toISOString().substr(0, 10),
+            HedgeValue: 0,
+            Beginning_Rate: 0,
+            EndRate: 0,
+            file: '', 
+            id: 0, 
+            IdCurrencyEntry: 0, 
+            IdResponse:0
+        },
+        created: function () {
+            this.getListCurrency();
+        },
+        methods:
+        {
+            setSaveInformation: function () {
+                alert("ver "+this.IdCurrencyEntry);
+                this.Generic = [];
+                axios.post("/api/CurrencyVariation2/Maint_CurrencyEntry", { 
+                    IdCurrencyEntry:this.IdCurrencyEntry,   
+                    DateCurrencyEntry:this.CurrentDate, 
+                    Hedge_Value:this.HedgeValue,       
+                    Beginning_Rate:this.BeginningRate,    
+                    End_Rate:this.EndRate,          
+                    CreateUserid:0,      
+                    DateModify:null,        
+                    CreateDateCurrency:null 
+                }
+
+                ).then(function () {
+                    this.Generic = response.body;
+                    this.IdResponse = this.Generic.Key;
+                    console.log('SUCCESS!!'+this.IdResponse);
+                })
+                    .catch(function () {
+                        console.log('FAILURE!!');
+                    });
+
+            },
+            submitFiles() {
+                if (this.file) {
+                    // create a new FileReader to read this image and convert to base64 format
+                    var reader = new FileReader();
+                    // Define a callback function to run, when FileReader finishes its job
+                    reader.onload = (e) => {
+                        // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+                        // Read image as base64 and set to imageData
+                        var result = e.target.result.split(",");
+                        this.fileData = result[1];
+
+                        axios.post('/api/CurrencyVariation/SET_FILE', { File: this.fileData, Id: this.id }
+
+                        ).then(function () {
+                            console.log('SUCCESS!!');
+                        })
+                            .catch(function () {
+                                console.log('FAILURE!!');
+                            });
+                    }
+                    reader.readAsDataURL(this.file);
+                }
+
+            },
+
+            handleFileUpload() {
+                this.file = this.$refs.file.files[0];
+                console.log(this.file);
+
+            },
+            ClenForm() {
+
+            },
+            getListCurrency: function () {
+                this.listado = [];
+                this.$http.get("/api/CurrencyVariation/GETCurrencyListApp").then(function (response) {
+                    this.listado = response.body;
+                    prepareJqDatatables();
+                });
+            }
+        }
+
+    });
+</script>
+
+
+
+
+using Data.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using CurrencyVariationFronEnd.AplicationEntity;
+using CurrencyVariationFronEnd.Models.Services;
+
+namespace CurrencyVariationFronEnd.Controllers
+{
+    public class CurrencyVariationController : ApiController
+    {
+        private CurrencyVariationServices dba = new CurrencyVariationServices();
+        [HttpGet]
+        public IEnumerable<CurrencyEntryEntity> GETCurrencyListApp()
+        {
+            var entidad = dba.GET_CurrencyListServices();
+            return entidad;
+        } 
+
+        [HttpPost]
+        public Generic SET_FILE(Data.Entity.PdfBinaryEntity para)
+        {
+            var mjs = new Generic();
+
+            mjs.Valor = dba.SetPdfMantanamServices(para);
+
+            if (mjs.Valor == "Ok")
+            {
+                return mjs;
+            } 
+            return mjs;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
