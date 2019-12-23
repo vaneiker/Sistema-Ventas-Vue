@@ -1,0 +1,16 @@
+  public HttpResponseMessage ViewGetFile(int documentId)
+        {  
+            var getDocument = Data.GetPdfBin(documentId);
+            var file = getDocument.PdfBinary1;
+            //string _Origin = HttpContext.Current.Server.MapPath("~") + url; 
+            // MemoryStream ms = new MemoryStream();
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+
+            MemoryStream stream = new MemoryStream(file);
+            result.Content = new StreamContent(stream);
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            result.Content.Headers.ContentDisposition.FileName = "eiker.pdf";
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            return result; 
+            //return new HttpResponseMessage(HttpStatusCode.NotFound);
+        } 
