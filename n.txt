@@ -1,0 +1,89 @@
+USE [Global]
+GO
+/****** Object:  StoredProcedure [Documents].[SP_SET_DOCUMENT]    Script Date: 1/8/2020 11:13:00 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
+-- Author:		Rabel Obispo
+-- Create date: 2014-11-24
+-- Description:	Set a document
+-- =============================================
+ALTER PROCEDURE [Documents].[SP_SET_DOCUMENT]
+	 @Doc_Type_Id int
+	,@Doc_Category_Id int
+	,@Document_Id int = null output
+	,@Document_Binary varbinary(max)
+	,@Document_Name varchar(200)
+	,@File_Creation_Date datetime
+	,@File_Expire_Date datetime
+	,@UserId int
+AS
+BEGIN
+	SET NOCOUNT ON;
+	declare @TableResult table(
+								[Action] varchar(10)
+								,Doc_Type_Id int
+								,Doc_Category_Id int
+								,Document_Id int
+							)
+
+	if @Document_Id <= 0 or @Document_Id is null 
+	begin 
+		set @Document_Id = isnull((
+				select
+					max([Document_Id]) + 1
+				from
+					[Documents].[DOCUMENT]
+				where
+						[Doc_Type_Id] = @Doc_Type_Id
+					and [Doc_Category_Id] = @Doc_Category_Id
+			),1)
+	end 	
+
+	merge [Documents].[DOCUMENT] as tt
+	using (select @Doc_Type_Id,@Doc_Category_Id,@Document_Id,@Document_Binary,@Document_Name,@File_Creation_Date,@File_Expire_Date,@UserId) 
+		as ts
+			(Doc_Type_Id,Doc_Category_Id,Document_Id,Document_Binary,Document_Name,File_Creation_Date,File_Expire_Date,UserId) 
+	on (
+				tt.Doc_Type_Id = ts.Doc_Type_Id
+			and tt.Doc_Category_Id = ts.Doc_Category_Id
+			and tt.Document_Id = ts.Document_Id
+		)
+	when matched then
+		update 
+			set 
+				 [Document_Binary] = ts.[Document_Binary]
+				,[Document_Name] = ts.[Document_Name]
+				,[File_Creation_Date] = ts.[File_Creation_Date]
+				,[File_Expire_Date] = ts.[File_Expire_Date]
+				,Modi_Date = getdate()	
+				,Modi_UsrId = ts.UserId
+				,hostname = host_name()
+	when not matched then
+		insert (Doc_Type_Id,Doc_Category_Id,Document_Id,Document_Binary,Document_Name,File_Creation_Date,File_Expire_Date,Document_Status
+				 ,Create_Date,Create_UsrId,hostname)
+		values ( ts.Doc_Type_Id,ts.Doc_Category_Id,ts.Document_Id,ts.Document_Binary,ts.Document_Name
+				,ts.File_Creation_Date,ts.File_Expire_Date,1
+				,getdate(),ts.UserId,host_name())
+	output $action
+			,isnull(deleted.Doc_Type_Id,inserted.Doc_Type_Id)
+			,isnull(deleted.Doc_Category_Id,inserted.Doc_Category_Id)
+			,isnull(deleted.Document_Id,inserted.Document_Id)
+	into @TableResult;
+
+	select
+	     [Action] 
+		,Doc_Type_Id 
+		,Doc_Category_Id 
+		,Document_Id
+	from 
+		@TableResult
+END
+
+
+
+ 
