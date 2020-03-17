@@ -1,0 +1,23 @@
+
+CREATE TABLE [dbo].[POSIBLE_SELLERS_imports](
+	[rowid] [bigint] IDENTITY(1,1) NOT NULL,
+	[id] [nvarchar](255) NULL,
+	[createData] [datetime] NULL,
+	[id_anuncio] [nvarchar](255) NULL,
+	[id_formulario] [nvarchar](255) NULL,
+	[campaign_name] [nvarchar](255) NULL,
+	[form_name_titulo] [nvarchar](255) NULL,
+	[is_organic] [bit] NOT NULL,
+	[platforma digital ] [nvarchar](255) NULL,
+	[correo_electronico] [nvarchar](255) NULL,
+	[nombre_completo] [nvarchar](255) NULL,
+	[pais] [nvarchar](255) NULL,
+	[numero_de_telefono] [nvarchar](255) NULL,
+	[ProspectCode] [int] NULL,
+	[wasinserted] [int] NOT NULL,
+	[createdate] [datetime] NOT NULL,
+	[Dateofprocess] [datetime] NULL
+) ON [PRIMARY]
+
+GO
+
