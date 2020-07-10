@@ -1,0 +1,17 @@
+  update dbo.P_polizaheaderMov set MontoMov=34104.0011,
+                                   MontoNeto=34104.0011,
+								   Prima=29400.001
+where cotizacion=4202041616
+  
+  
+  update dbo.P_PolizaDetailMov set MontoImpuesto=4704.0001,
+                                   Neto=34104.0011,
+								   PrimaBruta=29400.001,
+								   MontoMov=34104.0011 
+  where cotizacion=4202041616
+
+
+
+  update dbo.IN_DocumentoCobrar  set Valor=34104.0011,
+                                     ValorItbis=4704.0001 
+  where Poliza='4-05-605748'
